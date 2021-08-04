@@ -14,6 +14,7 @@ defmodule ToyRobot.Robot do
     %Robot{north: 0, facing: :north}
     iex> robot |> Robot.move
     %Robot{north: 1, facing: :north}
+
   """
   def move(%Robot{facing: facing} = robot) do
     case facing do
@@ -35,6 +36,7 @@ defmodule ToyRobot.Robot do
     %Robot{facing: :north}
     iex> robot |> Robot.turn_left
     %Robot{facing: :west}
+
   """
   def turn_left(%Robot{facing: facing} = robot) do
     new_facing =
@@ -59,6 +61,7 @@ defmodule ToyRobot.Robot do
     %Robot{facing: :north}
     iex> robot |> Robot.turn_right
     %Robot{facing: :east}
+
   """
   def turn_right(%Robot{facing: facing} = robot) do
     new_facing =
