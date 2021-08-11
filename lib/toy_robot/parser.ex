@@ -21,17 +21,23 @@ defmodule ToyRobot.Parser do
     Enum.map(input, &parse_item/1)
   end
 
-  defp parse_item("PLACE " <> rest) do
-    [east, north, facing] = String.split(rest, ",")
+  defp parse_item("PLACE " <> _rest = command) do
+    format = ~r/\APLACE (\d+),(\d+),(NORTH|EAST|SOUTH|WEST)\z/
 
-    {
-      :place,
-      %{
-        north: String.to_integer(north),
-        east: String.to_integer(east),
-        facing: String.downcase(facing) |> String.to_atom()
-      }
-    }
+    case Regex.run(format, command) do
+      [_command, east, north, facing] ->
+        {
+          :place,
+          %{
+            north: String.to_integer(north),
+            east: String.to_integer(east),
+            facing: String.downcase(facing) |> String.to_atom()
+          }
+        }
+
+      nil ->
+        {:invalid, command}
+    end
   end
 
   defp parse_item("MOVE"), do: :move

@@ -102,4 +102,52 @@ defmodule ToyRobot.RunnerTest do
     assert robot.north == 2
     assert robot.facing == :north
   end
+
+  test "it prevents robot from moving outside of north boundary" do
+    %Simulation{robot: robot} =
+      Runner.run([
+        {:place, %{east: 0, north: 4, facing: :north}},
+        :move
+      ])
+
+    assert robot.east == 0
+    assert robot.north == 4
+    assert robot.facing == :north
+  end
+
+  test "it prevents robot from moving outside of east boundary" do
+    %Simulation{robot: robot} =
+      Runner.run([
+        {:place, %{east: 4, north: 0, facing: :east}},
+        :move
+      ])
+
+    assert robot.east == 4
+    assert robot.north == 0
+    assert robot.facing == :east
+  end
+
+  test "it prevents robot from moving outside of south boundary" do
+    %Simulation{robot: robot} =
+      Runner.run([
+        {:place, %{east: 0, north: 0, facing: :south}},
+        :move
+      ])
+
+    assert robot.east == 0
+    assert robot.north == 0
+    assert robot.facing == :south
+  end
+
+  test "it prevents robot from moving outside of west boundary" do
+    %Simulation{robot: robot} =
+      Runner.run([
+        {:place, %{east: 0, north: 0, facing: :west}},
+        :move
+      ])
+
+    assert robot.east == 0
+    assert robot.north == 0
+    assert robot.facing == :west
+  end
 end
