@@ -7,7 +7,8 @@ defmodule ToyRobot.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      escript: escript()
     ]
   end
 
@@ -19,5 +20,9 @@ defmodule ToyRobot.MixProject do
 
   defp deps do
     []
+  end
+
+  defp escript do
+    [main_module: ToyRobot.CLI]
   end
 end
