@@ -79,6 +79,18 @@ defmodule ToyRobot.RunnerTest do
     assert robot.facing == :east
   end
 
+  test "it handles a place + uturn command" do
+    %Simulation{robot: robot} =
+      Runner.run([
+        {:place, %{east: 1, north: 2, facing: :north}},
+        :uturn
+      ])
+
+    assert robot.east == 1
+    assert robot.north == 2
+    assert robot.facing == :south
+  end
+
   test "it handles a place + report command" do
     output =
       capture_io(fn ->
