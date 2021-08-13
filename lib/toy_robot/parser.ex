@@ -6,14 +6,15 @@ defmodule ToyRobot.Parser do
 
     iex> alias ToyRobot.Parser
     ToyRobot.Parser
-    iex> input = ["PLACE 1,2,NORTH", "MOVE", "LEFT", "RIGHT", "REPORT"]
-    ["PLACE 1,2,NORTH", "MOVE", "LEFT", "RIGHT", "REPORT"]
+    iex> input = ["PLACE 1,2,NORTH", "MOVE", "LEFT", "RIGHT", "UTURN", "REPORT"]
+    ["PLACE 1,2,NORTH", "MOVE", "LEFT", "RIGHT", "UTURN", "REPORT"]
     iex> Parser.parse(input)
     [
       {:place, %{north: 2, east: 1, facing: :north}},
       :move,
       :turn_left,
       :turn_right,
+      :uturn,
       :report
     ]
   """
@@ -43,6 +44,7 @@ defmodule ToyRobot.Parser do
   defp parse_item("MOVE"), do: :move
   defp parse_item("LEFT"), do: :turn_left
   defp parse_item("RIGHT"), do: :turn_right
+  defp parse_item("UTURN"), do: :uturn
   defp parse_item("REPORT"), do: :report
   defp parse_item(input), do: {:invalid, input}
 end

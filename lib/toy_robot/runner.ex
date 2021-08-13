@@ -47,6 +47,11 @@ defmodule ToyRobot.Runner do
     run(rest, simulation)
   end
 
+  defp run([:uturn | rest], simulation) do
+    {:ok, simulation} = Simulation.uturn(simulation)
+    run(rest, simulation)
+  end
+
   defp run([{:invalid, _command} | rest], simulation) do
     run(rest, simulation)
   end

@@ -130,4 +130,23 @@ defmodule ToyRobot.Simulation do
   def turn_right(%Simulation{robot: robot} = simulation) do
     {:ok, %{simulation | robot: Robot.turn_right(robot)}}
   end
+
+  @doc """
+  Turn the robot in the opposite direction
+
+  ## Examples
+
+    iex> alias ToyRobot.{Robot, Table, Simulation}
+    [ToyRobot.Robot, ToyRobot.Table, ToyRobot.Simulation]
+    iex> table = %Table{north_boundary: 4, east_boundary: 4}
+    %Table{north_boundary: 4, east_boundary: 4}
+    iex> simulation = %Simulation{table: table, robot: %Robot{north: 0, east: 0, facing: :north}}
+    %Simulation{table: table, robot: %Robot{north: 0, east: 0, facing: :north}}
+    iex> Simulation.uturn(simulation)
+    {:ok, %Simulation{table: table, robot: %Robot{north: 0, east: 0, facing: :south}}}
+
+  """
+  def uturn(%Simulation{robot: robot} = simulation) do
+    {:ok, %{simulation | robot: Robot.uturn(robot)}}
+  end
 end

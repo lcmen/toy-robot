@@ -38,6 +38,6 @@ defmodule ToyRobot.CLITest do
         ToyRobot.CLI.main([commands])
       end)
 
-    assert String.trim(output) == "The robot is at (0,4) and is facing NORTH"
+    assert String.trim(output) == "The robot is at (0,4) and is facing SOUTH"
   end
 end
