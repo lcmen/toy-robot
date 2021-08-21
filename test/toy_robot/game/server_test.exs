@@ -17,4 +17,11 @@ defmodule ToyRobot.Game.ServerTest do
     res = Server.place(game, %{north: 10, east: 10, facing: :north}, "Eve")
     assert res == {:error, :out_of_bounds}
   end
+
+  test "it cannot place a robot on the field occupied by another robot", %{game: game} do
+    position = %{north: 0, east: 0, facing: :north}
+    :ok = Server.place(game, position, "Wall-E")
+    res = Server.place(game, position, "Robby")
+    assert res == {:error, :occupied}
+  end
 end

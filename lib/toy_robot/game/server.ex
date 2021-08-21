@@ -1,15 +1,17 @@
 defmodule ToyRobot.Game.Server do
   use GenServer
 
-  alias ToyRobot.{Game.PlayerSupervisor, Table}
+  alias ToyRobot.{Game.PlayerSupervisor, Game.Players, Table}
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
 
   def place(game, position, name) do
-    case valid_position(game, position) do
-      :ok -> GenServer.call(game, {:place, position, name})
+    with :ok <- valid_position(game, position),
+         :ok <- position_available(game, position) do
+      GenServer.call(game, {:place, position, name})
+    else
       error -> error
     end
   end
@@ -25,7 +27,6 @@ defmodule ToyRobot.Game.Server do
     {
       :ok,
       %{
-        players: %{},
         registry_id: registry_id,
         table: %Table{north_boundary: north_boundary, east_boundary: east_boundary}
       }
@@ -34,6 +35,10 @@ defmodule ToyRobot.Game.Server do
 
   defp valid_position(game, position) do
     GenServer.call(game, {:valid_position, position})
+  end
+
+  defp position_available(game, position) do
+    GenServer.call(game, {:position_available, position})
   end
 
   def handle_call(
@@ -49,11 +54,31 @@ defmodule ToyRobot.Game.Server do
     {:reply, Registry.count(registry_id), state}
   end
 
+  def handle_call({:position_available, position}, _from, %{registry_id: registry_id} = state) do
+    available =
+      registry_id
+      |> Players.all()
+      |> Players.positions()
+      |> Players.position_available?(position)
+
+    reply =
+      if available do
+        :ok
+      else
+        {:error, :occupied}
+      end
+
+    {:reply, reply, state}
+  end
+
   def handle_call({:valid_position, position}, _from, %{table: table} = state) do
-    if Table.valid_position?(table, position) do
-      {:reply, :ok, state}
-    else
-      {:reply, {:error, :out_of_bounds}, state}
-    end
+    reply =
+      if Table.valid_position?(table, position) do
+        :ok
+      else
+        {:error, :out_of_bounds}
+      end
+
+    {:reply, reply, state}
   end
 end
