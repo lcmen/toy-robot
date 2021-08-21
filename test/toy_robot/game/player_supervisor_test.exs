@@ -1,34 +1,28 @@
 defmodule ToyRobot.Game.PlayerSupervisorTest do
   use ExUnit.Case, async: true
 
-  alias ToyRobot.{Game.PlayerSupervisor, Robot}
+  alias ToyRobot.{Game.PlayerSupervisor, Table}
 
-  test "it starts a player child process" do
-    robot = %Robot{north: 0, east: 0, facing: :north}
-    {:ok, player} = PlayerSupervisor.start_child(robot, "Izzy")
-    [{registered_player, _}] = Registry.lookup(ToyRobot.Game.PlayerRegistry, "Izzy")
-    assert registered_player == player
+  setup do
+    position = %{north: 0, east: 0, facing: :north}
+    registry_id = String.to_atom("player-supervisor-test-#{UUID.uuid4()}")
+    table = %Table{north_boundary: 4, east_boundary: 4}
+
+    Registry.start_link(keys: :unique, name: registry_id)
+    {:ok, _} = PlayerSupervisor.start_child(registry_id, table, position, "Izzy")
+    [{_, _}] = Registry.lookup(registry_id, "Izzy")
+
+    %{registry_id: registry_id, player_name: "Izzy"}
   end
 
-  test "it starts a registry" do
-    registry = Process.whereis(ToyRobot.Game.PlayerRegistry)
-    assert registry
-  end
-
-  test "it moves a robot forward" do
-    robot = %Robot{north: 0, east: 0, facing: :north}
-    {:ok, _player} = PlayerSupervisor.start_child(robot, "Charlie")
-    :ok = PlayerSupervisor.move("Charlie")
-    %{north: north} = PlayerSupervisor.report("Charlie")
-
-    assert north == 1
-  end
-
-  test "it reports robot's location" do
-    robot = %Robot{north: 0, east: 0, facing: :north}
-    {:ok, _player} = PlayerSupervisor.start_child(robot, "Davros")
-    %{north: north} = PlayerSupervisor.report("Davros")
+  test "it moves a robot forward", %{registry_id: registry_id, player_name: player_name} do
+    %{north: north} = PlayerSupervisor.report(registry_id, player_name)
 
     assert north == 0
+
+    :ok = PlayerSupervisor.move(registry_id, player_name)
+    %{north: north} = PlayerSupervisor.report(registry_id, player_name)
+
+    assert north == 1
   end
 end

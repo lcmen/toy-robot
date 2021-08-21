@@ -1,11 +1,12 @@
 defmodule ToyRobot.Game.PlayerTest do
   use ExUnit.Case, async: true
 
-  alias ToyRobot.Game.Player
-  alias ToyRobot.Robot
+  alias ToyRobot.{Game.Player, Robot, Table}
 
   setup do
-    {:ok, player} = Player.start(%Robot{north: 0, east: 0, facing: :north})
+    position = %{north: 0, east: 0, facing: :north}
+    table = %Table{north_boundary: 4, east_boundary: 4}
+    {:ok, player} = Player.start(table, position)
     %{player: player}
   end
 

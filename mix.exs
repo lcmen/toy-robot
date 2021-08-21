@@ -14,13 +14,15 @@ defmodule ToyRobot.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:crypto, :logger],
       mod: {ToyRobot.Application, []}
     ]
   end
 
   defp deps do
-    []
+    [
+      {:uuid, "~> 1.1"}
+    ]
   end
 
   defp escript do
