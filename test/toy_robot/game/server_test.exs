@@ -1,9 +1,10 @@
 defmodule ToyRobot.Game.ServerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
-  alias ToyRobot.Game.Server
+  alias ToyRobot.Game.{PlayerSupervisor, Server}
 
   setup do
+    start_supervised(PlayerSupervisor)
     {:ok, game} = Server.start_link(north_boundary: 4, east_boundary: 4)
     %{game: game}
   end
