@@ -4,6 +4,8 @@ defmodule ToyRobot.Game.PlayerSupervisorTest do
   alias ToyRobot.{Game.PlayerSupervisor, Table}
 
   setup do
+    start_supervised(PlayerSupervisor)
+
     position = %{north: 0, east: 0, facing: :north}
     registry_id = String.to_atom("player-supervisor-test-#{UUID.uuid4()}")
     table = %Table{north_boundary: 4, east_boundary: 4}

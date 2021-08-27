@@ -1,21 +1,11 @@
 defmodule ToyRobot.Game.Server do
   use GenServer
 
-  alias ToyRobot.{Game.PlayerSupervisor, Table}
+  alias ToyRobot.Game.{PlayerSupervisor, Players}
+  alias ToyRobot.Table
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
-  end
-
-  def place(game, position, name) do
-    case valid_position(game, position) do
-      :ok -> GenServer.call(game, {:place, position, name})
-      error -> error
-    end
-  end
-
-  def player_count(game) do
-    GenServer.call(game, :player_count)
   end
 
   def init(north_boundary: north_boundary, east_boundary: east_boundary) do
@@ -25,22 +15,23 @@ defmodule ToyRobot.Game.Server do
     {
       :ok,
       %{
-        players: %{},
         registry_id: registry_id,
         table: %Table{north_boundary: north_boundary, east_boundary: east_boundary}
       }
     }
   end
 
-  defp valid_position(game, position) do
-    GenServer.call(game, {:valid_position, position})
+  def handle_call({:move, name}, _from, %{registry_id: registry_id} = state) do
+    Players.move(registry_id, name)
+
+    {:reply, :ok, state}
   end
 
-  def handle_call(
-        {:place, position, name},
-        _from,
-        %{registry_id: registry_id, table: table} = state
-      ) do
+  def handle_call({:next_position, name}, _from, %{registry_id: registry_id} = state) do
+    {:reply, Players.next_position(registry_id, name), state}
+  end
+
+  def handle_call({:place, position, name}, _from, %{registry_id: registry_id, table: table} = state) do
     {:ok, _} = PlayerSupervisor.start_child(registry_id, table, position, name)
     {:reply, :ok, state}
   end
@@ -49,11 +40,35 @@ defmodule ToyRobot.Game.Server do
     {:reply, Registry.count(registry_id), state}
   end
 
+  def handle_call({:position_available, position}, _from, %{registry_id: registry_id} = state) do
+    available =
+      registry_id
+      |> Players.all()
+      |> Players.positions()
+      |> Players.position_available?(position)
+
+    reply =
+      if available do
+        :ok
+      else
+        {:error, :occupied}
+      end
+
+    {:reply, reply, state}
+  end
+
+  def handle_call({:report, name}, _from, %{registry_id: registry_id} = state) do
+    {:reply, Players.report(registry_id, name), state}
+  end
+
   def handle_call({:valid_position, position}, _from, %{table: table} = state) do
-    if Table.valid_position?(table, position) do
-      {:reply, :ok, state}
-    else
-      {:reply, {:error, :out_of_bounds}, state}
-    end
+    reply =
+      if Table.valid_position?(table, position) do
+        :ok
+      else
+        {:error, :out_of_bounds}
+      end
+
+    {:reply, reply, state}
   end
 end

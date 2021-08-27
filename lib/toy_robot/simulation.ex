@@ -4,6 +4,26 @@ defmodule ToyRobot.Simulation do
   defstruct [:table, :robot]
 
   @doc """
+  Returns next position of the robot.
+
+  ## Examples
+
+    iex> alias ToyRobot.{Robot, Table, Simulation}
+    [ToyRobot.Robot, ToyRobot.Table, ToyRobot.Simulation]
+    iex> table = %Table{north_boundary: 5, east_boundary: 5}
+    %Table{north_boundary: 5, east_boundary: 5}
+    iex> simulation = %Simulation{
+    ...>   table: table,
+    ...>   robot: %Robot{north: 0, east: 0, facing: :north}
+    ...> }
+    iex> Simulation.next_position(simulation)
+    %Robot{north: 1, east: 0, facing: :north}
+  """
+  def next_position(%{robot: robot} = _simulation) do
+    Robot.move(robot)
+  end
+
+  @doc """
   Move the robot one step forward in facing direction unless,
   unless that position passes the boundaries of the table.
 
