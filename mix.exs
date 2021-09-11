@@ -7,6 +7,7 @@ defmodule ToyRobot.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps(),
       escript: escript()
     ]
@@ -14,13 +15,21 @@ defmodule ToyRobot.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:crypto, :logger],
       mod: {ToyRobot.Application, []}
     ]
   end
 
+  defp aliases do
+    [
+      test: "test --no-start"
+    ]
+  end
+
   defp deps do
-    []
+    [
+      {:uuid, "~> 1.1"}
+    ]
   end
 
   defp escript do
